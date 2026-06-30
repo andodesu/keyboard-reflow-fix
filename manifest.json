@@ -1,0 +1,7 @@
+{
+  "name": "Keyboard Reflow Fix",
+  "version": "1.0.0",
+  "description": "Reduces delay when Android keyboard closes by forcing immediate chat UI reflow.",
+  "author": "you",
+  "main": "index.js"
+}
