@@ -1,22 +1,39 @@
+// ==SillyTavern Extension==
+// name: Keyboard Instant Collapse Fix (Lite)
+// version: 1.2.0
+// description: Removes debounce delay on keyboard close by forcing immediate layout update.
+// author: you
+// ==/SillyTavern Extension==
+
 (function () {
-    const style = document.createElement('style');
-    style.textContent = `
-        #chat,
-        #chat-wrapper,
-        #chat-container,
-        #send_form,
-        #send_textarea,
-        body,
-        html {
-            transition: none !important;
-            animation: none !important;
-        }
+    function triggerInstantLayout() {
+        // Force ST to recalculate immediately
+        window.dispatchEvent(new Event('resize'));
 
-        html {
-            scroll-behavior: auto !important;
+        // Extra nudge for visualViewport systems
+        if (window.visualViewport) {
+            window.dispatchEvent(new Event('resize'));
         }
-    `;
-    document.head.appendChild(style);
+    }
 
-    console.log('[ST Keyboard Fix] CSS overrides applied');
+    if (window.visualViewport) {
+        visualViewport.addEventListener('resize', () => {
+            const vh = visualViewport.height;
+            const wh = window.innerHeight;
+
+            // Keyboard likely closed
+            if (vh > wh * 0.9) {
+                triggerInstantLayout();
+            }
+        });
+    }
+
+    // fallback
+    document.addEventListener('focusout', (e) => {
+        if (e.target?.matches?.('#send_textarea')) {
+            setTimeout(triggerInstantLayout, 0);
+        }
+    }, true);
+
+    console.log('[ST Keyboard Fix Lite] active');
 })();
